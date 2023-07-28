@@ -43,6 +43,8 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 		log.Printf("method: %s path:%s remote:%s spent:%v", r.Method, r.RequestURI, r.RemoteAddr, time.Since(start))
 	}()
 	if r.Method == http.MethodOptions {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "*")
 		ao := os.Getenv("Allow-Origin")
 		ah := os.Getenv("Allow-Headers")
 		if ao != "" {
@@ -145,6 +147,15 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+	ao := os.Getenv("Allow-Origin")
+	ah := os.Getenv("Allow-Headers")
+	if ao != "" {
+		w.Header().Set("Access-Control-Allow-Origin", ao)
+	}
+	if ah != "" {
+		w.Header().Set("Access-Control-Allow-Headers", ah)
+	}
 	w.WriteHeader(resp.StatusCode)
 	_, err = io.Copy(w, resp.Body)
 	if err != nil {

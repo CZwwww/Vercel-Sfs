@@ -216,35 +216,36 @@ func write503(w http.ResponseWriter, err error) {
 }
 
 func Encrypt(text []byte, key []byte) (string, error) {
-	if len(key) > 16 {
-		key = key[:16]
-	}
-	if len(key) < 16 {
-		for len(key) < 16 {
-			key = append(key, 'x')
-		}
-	}
-	//生成cipher.Block 数据块
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		log.Println("错误 -" + err.Error())
-		return "", err
-	}
-	blockSize := block.BlockSize()
-	//填充内容，如果不足16位字符
-	originData := pad(text, blockSize)
-	//加密，输出到[]byte数组
-	crypted := make([]byte, len(originData)+blockSize)
-	//填充随机数
-	iv := crypted[:blockSize]
-	_, err = io.ReadFull(rand.Reader, iv)
-	if err != nil {
-		return "", err
-	}
-	//加密方式
-	blockMode := cipher.NewCBCEncrypter(block, iv)
-	blockMode.CryptBlocks(crypted[blockSize:], originData)
-	return base64.StdEncoding.EncodeToString(crypted), nil
+	return string(text),nil
+	// if len(key) > 16 {
+	// 	key = key[:16]
+	// }
+	// if len(key) < 16 {
+	// 	for len(key) < 16 {
+	// 		key = append(key, 'x')
+	// 	}
+	// }
+	// //生成cipher.Block 数据块
+	// block, err := aes.NewCipher(key)
+	// if err != nil {
+	// 	log.Println("错误 -" + err.Error())
+	// 	return "", err
+	// }
+	// blockSize := block.BlockSize()
+	// //填充内容，如果不足16位字符
+	// originData := pad(text, blockSize)
+	// //加密，输出到[]byte数组
+	// crypted := make([]byte, len(originData)+blockSize)
+	// //填充随机数
+	// iv := crypted[:blockSize]
+	// _, err = io.ReadFull(rand.Reader, iv)
+	// if err != nil {
+	// 	return "", err
+	// }
+	// //加密方式
+	// blockMode := cipher.NewCBCEncrypter(block, iv)
+	// blockMode.CryptBlocks(crypted[blockSize:], originData)
+	// return base64.StdEncoding.EncodeToString(crypted), nil
 }
 
 func pad(ciphertext []byte, blockSize int) []byte {
@@ -255,33 +256,34 @@ func pad(ciphertext []byte, blockSize int) []byte {
 }
 
 func Decrypt(text string, key []byte) (string, error) {
-	if len(text) == 0 {
-		return text, nil
-	}
-	if len(key) > 16 {
-		key = key[:16]
-	}
-	if len(key) < 16 {
-		for len(key) < 16 {
-			key = append(key, 'x')
-		}
-	}
-	decode_data, err := base64.StdEncoding.DecodeString(text)
-	if err != nil {
-		return "", err
-	}
-	//生成密码数据块cipher.Block
-	block, _ := aes.NewCipher(key)
-	log.Println(block.BlockSize())
-	//解密模式
-	blockMode := cipher.NewCBCDecrypter(block, decode_data[:block.BlockSize()])
-	//输出到[]byte数组
-	origin_data := make([]byte, len(decode_data)-block.BlockSize())
-	blockMode.CryptBlocks(origin_data, decode_data[block.BlockSize():])
-	log.Println(origin_data)
-	log.Println(len(origin_data))
-	//去除填充,并返回
-	return string(unpad(origin_data)), nil
+	return text,nil
+	// if len(text) == 0 {
+	// 	return text, nil
+	// }
+	// if len(key) > 16 {
+	// 	key = key[:16]
+	// }
+	// if len(key) < 16 {
+	// 	for len(key) < 16 {
+	// 		key = append(key, 'x')
+	// 	}
+	// }
+	// decode_data, err := base64.StdEncoding.DecodeString(text)
+	// if err != nil {
+	// 	return "", err
+	// }
+	// //生成密码数据块cipher.Block
+	// block, _ := aes.NewCipher(key)
+	// log.Println(block.BlockSize())
+	// //解密模式
+	// blockMode := cipher.NewCBCDecrypter(block, decode_data[:block.BlockSize()])
+	// //输出到[]byte数组
+	// origin_data := make([]byte, len(decode_data)-block.BlockSize())
+	// blockMode.CryptBlocks(origin_data, decode_data[block.BlockSize():])
+	// log.Println(origin_data)
+	// log.Println(len(origin_data))
+	// //去除填充,并返回
+	// return string(unpad(origin_data)), nil
 }
 
 func unpad(ciphertext []byte) []byte {

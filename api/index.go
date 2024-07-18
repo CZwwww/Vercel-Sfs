@@ -152,7 +152,7 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	}
 	request.Header = r.Header.Clone()
 	request.Header.Set("Content-Type", contentType)
-	request.Header.Set("Origin", r.Header.Get("Origin"))
+	request.Header.Set("Origin", fmt.Sprintf("%s://%s",parse.Scheme,parse.Host))
 	//request.Form = r.Form
 	log.Println(r.Form)
 	//request.MultipartForm = r.MultipartForm

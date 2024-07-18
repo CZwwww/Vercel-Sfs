@@ -39,7 +39,8 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	request.URL = GetProxyUrl().ResolveReference(r.URL)
 	resp, err := http.DefaultClient.Do(request)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		log.Println(err)
+		http.Error(w, "unknown err", 500)
 		return
 	}
 	for k, v := range resp.Header {

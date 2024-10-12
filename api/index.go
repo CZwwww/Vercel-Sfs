@@ -31,6 +31,12 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		log.Printf("method: %s path:%s remote:%s spent:%v", r.Method, r.RequestURI, r.RemoteAddr, time.Since(start))
 	}()
+	dumpRequest, err2 := httputil.DumpRequest(r, false)
+	if err2 != nil {
+		log.Println(err2)
+		return
+	}
+	log.Println("\n"+string(dumpRequest))
 	if isWebSock(r) {
 		handleWebSocket(w, r)
 		return

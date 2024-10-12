@@ -75,26 +75,30 @@ func isWebSock(r *http.Request) bool {
 func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	host := GetProxyUrl().Host
 	controller := http.NewResponseController(w)
-	request, err2 := httputil.DumpRequest(r, false)
-	if err2 != nil {
-		panic(err2)
+	request, err := httputil.DumpRequest(r, false)
+	if err != nil {
+		log.Println(err)
+		return
 	}
 	hijack, _, err := controller.Hijack()
 	if err != nil {
-		panic(err)
+		log.Println(err)
+		return
 	}
 	defer hijack.Close()
 	dial, err := net.Dial("tcp", host)
 	if err != nil {
-		panic(err)
+		log.Println(err)
+		return
 	}
 	defer dial.Close()
-	log.Println("\n" + string(request))
+	log.Println("websock")
 	log.Println(request[len(request)-4:])
 	request = append(request, []byte("Connection: Upgrade\r\nUpgrade: websocket\r\n")...)
-	_, err2 = dial.Write(request)
-	if err2 != nil {
-		panic(err2)
+	_, err = dial.Write(request)
+	if err != nil {
+		log.Println(err)
+		return
 	}
 	go func() {
 		_, err2 := io.Copy(hijack, dial)

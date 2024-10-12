@@ -66,7 +66,7 @@ func Handle(w http.ResponseWriter, r *http.Request) {
 }
 
 func isWebSock(r *http.Request) bool {
-	if r.Header.Get("Connection") == "Upgrade" {
+	if r.Header.Get("Sec-Websocket-Key") != "" {
 		return true
 	}
 	return false
@@ -90,6 +90,8 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	}
 	defer dial.Close()
 	log.Println("\n" + string(request))
+	log.Println(request[len(request)-4:])
+	request = append(request, []byte("Connection: Upgrade\r\nUpgrade: websocket\r\n")...)
 	_, err2 = dial.Write(request)
 	if err2 != nil {
 		panic(err2)
